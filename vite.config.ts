@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    allowedHosts: ["sales-manage-crm.onrender.com"], // ✅ add this line
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
