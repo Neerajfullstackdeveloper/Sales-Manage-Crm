@@ -10,31 +10,20 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     allowedHosts: [
       "localhost",
-      "10.214.152.133",
+      "127.0.0.1",
       "sales-manage-crm.onrender.com"
     ],
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(), 
+    mode === "development" && componentTagger()
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  build: {
-    target: "es2015",
-    minify: "esbuild",
-    sourcemap: false,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ["react", "react-dom"],
-          router: ["react-router-dom"],
-          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu"],
-        },
-      },
-    },
-  },
-  define: {
-    "process.env.NODE_ENV": JSON.stringify(mode),
+  esbuild: {
+    jsx: "automatic",
   },
 }));
