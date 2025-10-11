@@ -16,16 +16,13 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      jsxRuntime: "automatic",
-      jsxImportSource: "react",
+      jsxRuntime: "classic",
     }), 
     mode === "development" && componentTagger()
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "react/jsx-runtime": path.resolve(__dirname, "./src/jsx-runtime.ts"),
-      "react/jsx-dev-runtime": path.resolve(__dirname, "./src/jsx-runtime.ts"),
     },
   },
   define: {
