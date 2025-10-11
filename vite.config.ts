@@ -16,8 +16,13 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      jsxRuntime: "classic",
+      jsxRuntime: "automatic",
       jsxImportSource: "react",
+      babel: {
+        plugins: [
+          ["@babel/plugin-transform-react-jsx", { runtime: "automatic" }]
+        ]
+      }
     }), 
     mode === "development" && componentTagger()
   ].filter(Boolean),
@@ -30,9 +35,7 @@ export default defineConfig(({ mode }) => ({
     "process.env.NODE_ENV": JSON.stringify(mode === "production" ? "production" : "development"),
     global: "globalThis",
   },
-  esbuild: {
-    jsx: "transform",
-    jsxFactory: "React.createElement",
-    jsxFragment: "React.Fragment",
+  optimizeDeps: {
+    include: ["react", "react-dom"],
   },
 }));
