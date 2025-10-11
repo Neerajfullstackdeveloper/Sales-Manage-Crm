@@ -18,17 +18,14 @@ export default defineConfig(({ mode }) => ({
     react({
       jsxRuntime: "automatic",
       jsxImportSource: "react",
-      babel: {
-        plugins: [
-          ["@babel/plugin-transform-react-jsx", { runtime: "automatic" }]
-        ]
-      }
     }), 
     mode === "development" && componentTagger()
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "react/jsx-runtime": path.resolve(__dirname, "./src/jsx-runtime.ts"),
+      "react/jsx-dev-runtime": path.resolve(__dirname, "./src/jsx-runtime.ts"),
     },
   },
   define: {
