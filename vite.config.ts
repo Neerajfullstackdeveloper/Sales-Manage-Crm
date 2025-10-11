@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
+      jsxRuntime: "classic",
       jsxImportSource: "react",
     }), 
     mode === "development" && componentTagger()
@@ -27,5 +28,11 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     "process.env.NODE_ENV": JSON.stringify(mode === "production" ? "production" : "development"),
+    global: "globalThis",
+  },
+  esbuild: {
+    jsx: "transform",
+    jsxFactory: "React.createElement",
+    jsxFragment: "React.Fragment",
   },
 }));
