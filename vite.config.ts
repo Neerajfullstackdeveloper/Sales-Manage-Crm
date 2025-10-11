@@ -15,7 +15,9 @@ export default defineConfig(({ mode }) => ({
     ],
   },
   plugins: [
-    react(), 
+    react({
+      jsxImportSource: "react",
+    }), 
     mode === "development" && componentTagger()
   ].filter(Boolean),
   resolve: {
@@ -23,7 +25,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  esbuild: {
-    jsx: "automatic",
+  define: {
+    "process.env.NODE_ENV": JSON.stringify(mode === "production" ? "production" : "development"),
   },
 }));
