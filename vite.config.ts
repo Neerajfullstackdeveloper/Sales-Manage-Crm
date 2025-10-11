@@ -24,6 +24,8 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "react/jsx-runtime": path.resolve(__dirname, "./src/jsx-runtime.js"),
+      "react/jsx-dev-runtime": path.resolve(__dirname, "./src/jsx-runtime.js"),
     },
   },
   define: {
