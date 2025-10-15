@@ -95,6 +95,7 @@
 // };
 
 // export default BlockDataView;
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyCard from "@/components/CompanyCard";
@@ -216,19 +217,17 @@ const BlockDataView = ({ userId, userRole }: BlockDataViewProps) => {
               <CompanyCard
                 company={company}
                 onUpdate={fetchBlockData}
-                canDelete={userRole === "admin"}
                 userRole={userRole}
+                canDelete={true} // ✅ now always true for all users
               />
 
-              {/* ✅ Delete Button (only visible to admin) */}
-              {userRole === "admin" && (
-                <button
-                  onClick={() => handleDeleteCompany(company)}
-                  className="absolute top-2 right-2 bg-red-500 text-white text-sm px-3 py-1 rounded hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              )}
+              {/* ✅ Delete Button visible for everyone */}
+              <button
+                onClick={() => handleDeleteCompany(company)}
+                className="absolute top-2 right-2 bg-red-500 text-white text-sm px-3 py-1 rounded hover:bg-red-600"
+              >
+                Delete
+              </button>
             </div>
           ))}
         </div>
