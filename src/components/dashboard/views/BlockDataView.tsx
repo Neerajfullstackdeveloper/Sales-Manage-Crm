@@ -142,11 +142,8 @@ const BlockDataView = ({ userId, userRole }: BlockDataViewProps) => {
     if (!companiesError && userCompanies) {
       const blockCompanies = userCompanies.filter(company => {
         if (!company.comments || company.comments.length === 0) return false;
-        const latestComment = company.comments.sort(
-          (a: any, b: any) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )[0];
-        return latestComment.category === "block";
+        // Show if ANY comment has category 'block'
+        return company.comments.some((comment: any) => comment.category === "block");
       });
 
       const companiesWithSortedComments = blockCompanies.map(company => ({
