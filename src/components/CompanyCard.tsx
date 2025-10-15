@@ -165,23 +165,33 @@ const CompanyCard = ({
   //   }
   // };
   const handleDelete = async () => {
-  try {
-    const { error } = await supabase
-      .from("companies")
-      .update({
-        is_deleted: true, // 👈 soft delete flag
-        deleted_at: new Date().toISOString(), // 👈 store timestamp (optional)
-      })
-      .eq("id", company.id);
+    try {
+      let updateObj: any = {
+        is_deleted: true,
+        deleted_at: new Date().toISOString(),
+      };
+      // If employee, set assigned_to_id to TL
+      if (userRole === "employee" && company.team_lead_id) {
+        updateObj.assigned_to_id = company.team_lead_id;
+      }
+      const { data, error } = await supabase
+        .from("companies")
+        .update(updateObj)
+        .eq("id", company.id)
+        .select();
 
-    if (error) throw error;
-
-    toast.success("Company moved to deleted data!");
-    onUpdate(); // 👈 refresh parent list (AssignedDataView)
-  } catch (error: any) {
-    toast.error(error.message || "Failed to delete company");
-  }
-};
+      console.log("Delete response:", { data, error, updateObj });
+      if (error) throw error;
+      if (!data || data.length === 0 || !data[0].is_deleted) {
+        toast.error("Delete failed: Company not marked as deleted.");
+        return;
+      }
+      toast.success("Company moved to deleted data!");
+      onUpdate();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete company");
+    }
+  };
 
 
 
