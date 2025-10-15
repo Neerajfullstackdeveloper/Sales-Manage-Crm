@@ -100,7 +100,7 @@ const DeletedDataView = () => {
                   }
                 >
                   <option value="" disabled>
-                    Reassign to employee...
+                    Reassign to employe...
                   </option>
                   {employees.map((emp) => (
                     <option key={emp.id} value={emp.id}>
