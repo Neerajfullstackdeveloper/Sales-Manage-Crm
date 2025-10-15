@@ -84,7 +84,7 @@ const BlockDataView = ({ userId, userRole }: BlockDataViewProps) => {
               key={company.id}
               company={company}
               onUpdate={fetchBlockData}
-              canDelete={userRole === "admin"}
+              canDelete={true}
               userRole={userRole}
             />
           ))}
@@ -95,4 +95,3 @@ const BlockDataView = ({ userId, userRole }: BlockDataViewProps) => {
 };
 
 export default BlockDataView;
-
