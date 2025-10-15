@@ -5,11 +5,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { Building2, Phone, Mail, MapPin, MessageSquare, Trash2, Clock } from "lucide-react";
+import {
+  Building2,
+  Phone,
+  Mail,
+  MapPin,
+  MessageSquare,
+  Trash2,
+  Clock,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CompanyCardProps {
@@ -22,32 +42,49 @@ interface CompanyCardProps {
 
 const categoryColors = {
   hot: "bg-[hsl(var(--hot))] text-[hsl(var(--hot-foreground))]",
-  follow_up: "bg-[hsl(var(--follow-up))] text-[hsl(var(--follow-up-foreground))]",
+  follow_up:
+    "bg-[hsl(var(--follow-up))] text-[hsl(var(--follow-up-foreground))]",
   block: "bg-[hsl(var(--block))] text-[hsl(var(--block-foreground))]",
   general: "bg-[hsl(var(--general))] text-[hsl(var(--general-foreground))]",
 };
 
 const getCategoryIcon = (category: string) => {
   switch (category) {
-    case 'hot': return '🔥';
-    case 'follow_up': return '📅';
-    case 'block': return '🚫';
-    case 'general': return '📋';
-    default: return '📄';
+    case "hot":
+      return "🔥";
+    case "follow_up":
+      return "📅";
+    case "block":
+      return "🚫";
+    case "general":
+      return "📋";
+    default:
+      return "📄";
   }
 };
 
 const getCategoryColor = (category: string) => {
   switch (category) {
-    case 'hot': return 'bg-red-100 text-red-800 border-red-200';
-    case 'follow_up': return 'bg-orange-100 text-orange-800 border-orange-200';
-    case 'block': return 'bg-gray-100 text-gray-800 border-gray-200';
-    case 'general': return 'bg-green-100 text-green-800 border-green-200';
-    default: return 'bg-blue-100 text-blue-800 border-blue-200';
+    case "hot":
+      return "bg-red-100 text-red-800 border-red-200";
+    case "follow_up":
+      return "bg-orange-100 text-orange-800 border-orange-200";
+    case "block":
+      return "bg-gray-100 text-gray-800 border-gray-200";
+    case "general":
+      return "bg-green-100 text-green-800 border-green-200";
+    default:
+      return "bg-blue-100 text-blue-800 border-blue-200";
   }
 };
 
-const CompanyCard = ({ company, onUpdate, canDelete, showAssignedTo, userRole }: CompanyCardProps) => {
+const CompanyCard = ({
+  company,
+  onUpdate,
+  canDelete,
+  showAssignedTo,
+  userRole,
+}: CompanyCardProps) => {
   const [commentText, setCommentText] = useState("");
   const [category, setCategory] = useState("general");
   const [commentDate, setCommentDate] = useState<string>("");
@@ -56,7 +93,7 @@ const CompanyCard = ({ company, onUpdate, canDelete, showAssignedTo, userRole }:
   const [commentsOpen, setCommentsOpen] = useState(false);
 
   const lastComment = company.comments?.[0];
-  
+
   // Set default category based on the last comment
   React.useEffect(() => {
     if (lastComment?.category) {
@@ -73,10 +110,11 @@ const CompanyCard = ({ company, onUpdate, canDelete, showAssignedTo, userRole }:
     setLoading(true);
     try {
       const { data: userData } = await supabase.auth.getUser();
-      
+
       // Check if category is changing
-      const isCategoryChanging = lastComment?.category && lastComment.category !== category;
-      
+      const isCategoryChanging =
+        lastComment?.category && lastComment.category !== category;
+
       const { error } = await supabase.from("comments").insert([
         {
           company_id: company.id,
@@ -90,11 +128,16 @@ const CompanyCard = ({ company, onUpdate, canDelete, showAssignedTo, userRole }:
       if (error) throw error;
 
       if (isCategoryChanging) {
-        toast.success(`Comment added successfully! Company moved from ${lastComment.category.replace('_', ' ')} to ${category.replace('_', ' ')} category.`);
+        toast.success(
+          `Comment added successfully! Company moved from ${lastComment.category.replace(
+            "_",
+            " "
+          )} to ${category.replace("_", " ")} category.`
+        );
       } else {
         toast.success("Comment added successfully!");
       }
-      
+
       setCommentText("");
       setCommentDate("");
       setOpen(false);
@@ -131,10 +174,19 @@ const CompanyCard = ({ company, onUpdate, canDelete, showAssignedTo, userRole }:
               <Building2 className="h-5 w-5 text-primary" />
               {company.company_name}
             </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">{company.owner_name}</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {company.owner_name}
+            </p>
           </div>
           {lastComment && (
-            <Badge className={cn("ml-2", categoryColors[lastComment.category as keyof typeof categoryColors])}>
+            <Badge
+              className={cn(
+                "ml-2",
+                categoryColors[
+                  lastComment.category as keyof typeof categoryColors
+                ]
+              )}
+            >
               {lastComment.category.replace("_", " ")}
             </Badge>
           )}
@@ -158,6 +210,18 @@ const CompanyCard = ({ company, onUpdate, canDelete, showAssignedTo, userRole }:
               {company.address}
             </div>
           )}
+          {company.products && company.products.length > 0 && (
+            <div className="flex items-start gap-2 text-muted-foreground">
+              <span className="font-medium">Products:</span>
+              <div className="flex flex-wrap gap-1">
+                {company.products.map((product: string, index: number) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {product}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
           {showAssignedTo && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <span className="font-medium">Assigned to:</span>
@@ -172,10 +236,13 @@ const CompanyCard = ({ company, onUpdate, canDelete, showAssignedTo, userRole }:
 
         {lastComment && (
           <div className="border-t pt-3">
-            <p className="text-xs font-medium text-muted-foreground mb-1">Last Comment</p>
+            <p className="text-xs font-medium text-muted-foreground mb-1">
+              Last Comment
+            </p>
             <p className="text-sm">{lastComment.comment_text}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Added: {lastComment.comment_date
+              Added:{" "}
+              {lastComment.comment_date
                 ? new Date(lastComment.comment_date).toLocaleDateString()
                 : new Date(lastComment.created_at).toLocaleString()}
             </p>
@@ -226,7 +293,11 @@ const CompanyCard = ({ company, onUpdate, canDelete, showAssignedTo, userRole }:
                     </SelectContent>
                   </Select>
                 </div>
-                <Button onClick={handleAddComment} disabled={loading} className="w-full">
+                <Button
+                  onClick={handleAddComment}
+                  disabled={loading}
+                  className="w-full"
+                >
                   Add Comment
                 </Button>
               </div>
@@ -251,40 +322,49 @@ const CompanyCard = ({ company, onUpdate, canDelete, showAssignedTo, userRole }:
                 <ScrollArea className="h-[60vh] pr-4">
                   <div className="space-y-4">
                     {company.comments
-                      .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                      .sort(
+                        (a: any, b: any) =>
+                          new Date(b.created_at).getTime() -
+                          new Date(a.created_at).getTime()
+                      )
                       .map((comment: any) => (
-                      <Card key={comment.id} className="p-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                              <span className="text-xs font-medium text-blue-600">
-                                {comment.user?.display_name?.charAt(0) || 'U'}
-                              </span>
+                        <Card key={comment.id} className="p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span className="text-xs font-medium text-blue-600">
+                                  {comment.user?.display_name?.charAt(0) || "U"}
+                                </span>
+                              </div>
+                              <div>
+                                <p className="font-medium text-sm">
+                                  {comment.user?.display_name || "Unknown User"}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {comment.user?.email}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-medium text-sm">
-                                {comment.user?.display_name || 'Unknown User'}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {comment.user?.email}
-                              </p>
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                className={`text-xs ${getCategoryColor(
+                                  comment.category
+                                )}`}
+                              >
+                                {getCategoryIcon(comment.category)}{" "}
+                                {comment.category.replace("_", " ")}
+                              </Badge>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {new Date(comment.created_at).toLocaleString()}
+                              </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Badge className={`text-xs ${getCategoryColor(comment.category)}`}>
-                              {getCategoryIcon(comment.category)} {comment.category.replace('_', ' ')}
-                            </Badge>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              {new Date(comment.created_at).toLocaleString()}
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {comment.comment_text}
-                        </p>
-                      </Card>
-                    ))}
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            {comment.comment_text}
+                          </p>
+                        </Card>
+                      ))}
                   </div>
                 </ScrollArea>
               </DialogContent>

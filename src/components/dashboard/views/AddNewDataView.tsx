@@ -119,13 +119,14 @@ const AddNewDataView = ({ userId }: AddNewDataViewProps) => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="products_services">Products & Services</Label>
+              <Label htmlFor="products_services">Products & Services  *</Label>
               <Textarea
                 id="products_services"
                 value={formData.products_services}
                 onChange={(e) =>
                   setFormData({ ...formData, products_services: e.target.value })
                 }
+                required
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
