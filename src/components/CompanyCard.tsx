@@ -149,21 +149,41 @@ const CompanyCard = ({
     }
   };
 
+  // const handleDelete = async () => {
+  //   try {
+  //     const { error } = await supabase
+  //       .from("companies")
+  //       .delete()
+  //       .eq("id", company.id);
+
+  //     if (error) throw error;
+
+  //     toast.success("Company deleted successfully!");
+  //     onUpdate();
+  //   } catch (error: any) {
+  //     toast.error(error.message || "Failed to delete company");
+  //   }
+  // };
   const handleDelete = async () => {
-    try {
-      const { error } = await supabase
-        .from("companies")
-        .delete()
-        .eq("id", company.id);
+  try {
+    const { error } = await supabase
+      .from("companies")
+      .update({
+        is_deleted: true, // 👈 soft delete flag
+        deleted_at: new Date().toISOString(), // 👈 store timestamp (optional)
+      })
+      .eq("id", company.id);
 
-      if (error) throw error;
+    if (error) throw error;
 
-      toast.success("Company deleted successfully!");
-      onUpdate();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete company");
-    }
-  };
+    toast.success("Company moved to deleted data!");
+    onUpdate(); // 👈 refresh parent list (AssignedDataView)
+  } catch (error: any) {
+    toast.error(error.message || "Failed to delete company");
+  }
+};
+
+
 
   return (
     <Card>

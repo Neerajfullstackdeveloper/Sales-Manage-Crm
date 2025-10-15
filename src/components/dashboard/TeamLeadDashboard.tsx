@@ -28,6 +28,7 @@ import RequestDataView from "./views/RequestDataView";
 import TeamManagementView from "./views/TeamManagementView";
 import DataAssignmentView from "./views/DataAssignmentView";
 import EmployeeDataOverviewView from "./views/EmployeeDataOverviewView";
+import DeletedDataView from "./views/DeletedData";
 
 interface TeamLeadDashboardProps {
   user: User;
@@ -55,6 +56,7 @@ const TeamLeadDashboard = ({ user }: TeamLeadDashboardProps) => {
     { id: "team", label: "Team Management", icon: Users },
     { id: "assign", label: "Assign Data", icon: UserPlus },
     { id: "overview", label: "Data Overview", icon: BarChart3 },
+    { id: "delete", label: "Deleted Data", icon: BarChart3 },
   ];
 
   return (
@@ -76,6 +78,7 @@ const TeamLeadDashboard = ({ user }: TeamLeadDashboardProps) => {
       {currentView === "team" && <TeamManagementView userId={user.id} />}
       {currentView === "assign" && <DataAssignmentView userId={user.id} />}
       {currentView === "overview" && <EmployeeDataOverviewView userId={user.id} />}
+      {currentView === "delete" && <EmployeeDataOverviewView userId={user.id} />}
     </DashboardLayout>
   );
 };
