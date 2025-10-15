@@ -157,34 +157,66 @@ const BlockDataView = ({ userId, userRole }: BlockDataViewProps) => {
           ) || [],
       }));
 
-      setCompanies(companiesWithSortedComments);
+        setCompanies(companiesWithSortedComments);
     }
 
     setLoading(false);
   };
 
   // ✅ Move company to deleted data safely
-  const handleDeleteCompany = async (company: any) => {
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete "${company.company_name}"?`
-    );
-    if (!confirmDelete) return;
+  // const handleDeleteCompany = async (company: any) => {
+  //   const confirmDelete = window.confirm(
+  //     `Are you sure you want to delete "${company.company_name}"?`
+  //   );
+  //   if (!confirmDelete) return;
 
-    try {
-      const { error } = await supabase
-        .from("companies")
-        .update({ is_deleted: true, deleted_at: new Date().toISOString() })
-        .eq("id", company.id);
+  //   try {
+  //     const { error } = await supabase
+  //       .from("companies")
+  //       .update({ is_deleted: true, deleted_at: new Date().toISOString() })
+  //       .eq("id", company.id);
 
-      if (error) throw error;
+  //     if (error) throw error;
 
-      alert("Company moved to Deleted Data successfully!");
-      fetchBlockData();
-    } catch (err: any) {
-      console.error(err);
-      alert("Failed to move company to Deleted Data.");
-    }
-  };
+  //     alert("Company moved to Deleted Data successfully!");
+  //     fetchBlockData();
+  //   } catch (err: any) {
+  //     console.error(err);
+  //     alert("Failed to move company to Deleted Data.");
+  //   }
+  // };
+
+const handleDeleteCompany = async (company: any) => {
+  const confirmDelete = window.confirm(
+    `Are you sure you want to delete "${company.company_name}"?`
+  );
+  if (!confirmDelete) return;
+
+  try {
+    // 1️⃣ Insert into deleted_companies
+    const { error: insertError } = await supabase
+      .from("deleted_companies")
+      .insert([{ ...company, deleted_at: new Date().toISOString() }]);
+
+    if (insertError) throw insertError;
+
+    // 2️⃣ Remove from main companies table
+    const { error: deleteError } = await supabase
+      .from("companies")
+      .delete()
+      .eq("id", company.id);
+
+    if (deleteError) throw deleteError;
+
+    alert("Company moved to Deleted Data!");
+    fetchBlockData();
+  } catch (err: any) {
+    console.error(err);
+    alert("Failed to move company to Deleted Data.");
+  }
+};
+
+
 
   if (loading) {
     return (

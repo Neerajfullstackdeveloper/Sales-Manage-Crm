@@ -3,7 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const DeletedDataView = () => {
+interface DeletedDataViewProps {
+  userId: string;
+}
+
+const DeletedDataView = ({ userId }: DeletedDataViewProps) => {
   const [deletedCompanies, setDeletedCompanies] = useState<any[]>([]);
   const [employees, setEmployees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +24,7 @@ const DeletedDataView = () => {
       .from("companies")
       .select("*")
       .eq("is_deleted", true)
+      .eq("assigned_to_id", userId)
       .order("deleted_at", { ascending: false });
 
     if (!error && data) {
@@ -29,16 +34,18 @@ const DeletedDataView = () => {
   };
 
   // ✅ Fetch all employees for reassignment dropdown
-  const fetchEmployees = async () => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("id, display_name, email, role");
+    const fetchEmployees = async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, display_name, email, user_roles(role)");
 
-    if (!error && data) {
-      // Filter only employees
-      const employeeList = data.filter((u) => u.role === "employee");
-      setEmployees(employeeList);
-    }
+      if (!error && data) {
+        // Filter only employees using user_roles relation
+        const employeeList = data.filter((u: any) =>
+          u.user_roles && Array.isArray(u.user_roles) && u.user_roles.some((r: any) => r.role === "employee")
+        );
+        setEmployees(employeeList);
+      }
   };
 
   // ✅ Reassign function
