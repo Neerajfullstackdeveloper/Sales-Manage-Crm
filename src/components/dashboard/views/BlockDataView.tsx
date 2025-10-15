@@ -135,15 +135,17 @@ const BlockDataView = ({ userId, userRole }: BlockDataViewProps) => {
           )
         )
       `)
-      .eq("assigned_to_id", userId)
-      .eq("is_deleted", false)
+  .eq("assigned_to_id", userId)
       .order("created_at", { ascending: false });
 
     if (!companiesError && userCompanies) {
       const blockCompanies = userCompanies.filter(company => {
         if (!company.comments || company.comments.length === 0) return false;
-        // Show if ANY comment has category 'block'
-        return company.comments.some((comment: any) => comment.category === "block");
+        // Sort comments by created_at descending and get the latest
+        const latestComment = company.comments.sort((a: any, b: any) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )[0];
+        return latestComment.category === "block";
       });
 
       const companiesWithSortedComments = blockCompanies.map(company => ({
