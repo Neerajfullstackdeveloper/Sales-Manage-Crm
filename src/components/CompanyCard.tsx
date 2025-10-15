@@ -402,9 +402,11 @@ const CompanyCard = ({
           )}
 
           {canDelete && (
-            <Button variant="destructive" size="icon" onClick={handleDelete}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <div className="w-full flex justify-end mt-2">
+              <Button variant="destructive" size="icon" onClick={handleDelete}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           )}
         </div>
       </CardContent>
