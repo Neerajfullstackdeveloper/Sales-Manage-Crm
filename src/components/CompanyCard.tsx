@@ -170,9 +170,37 @@ const CompanyCard = ({
         is_deleted: true,
         deleted_at: new Date().toISOString(),
       };
-      // If employee, set assigned_to_id to TL
-      if (userRole === "employee" && company.team_lead_id) {
-        updateObj.assigned_to_id = company.team_lead_id;
+      // If an employee deletes the company, try to set assigned_to_id to their team lead
+      if (userRole === "employee") {
+        try {
+          // company.assigned_to_id is the employee's profile id
+          const employeeId = company.assigned_to_id;
+          if (employeeId) {
+            const { data: tmData, error: tmError } = await supabase
+              .from("team_members")
+              .select("team_id")
+              .eq("employee_id", employeeId)
+              .limit(1);
+
+            if (tmError) throw tmError;
+            const teamId = Array.isArray(tmData) && tmData[0]?.team_id;
+            if (teamId) {
+              const { data: teamData, error: teamError } = await supabase
+                .from("teams")
+                .select("team_lead_id")
+                .eq("id", teamId)
+                .single();
+
+              if (teamError) throw teamError;
+              if (teamData?.team_lead_id) {
+                updateObj.assigned_to_id = teamData.team_lead_id;
+              }
+            }
+          }
+        } catch (lookupErr) {
+          console.warn("Failed to lookup team lead for employee during delete:", lookupErr);
+          // fallback: leave assigned_to_id unchanged
+        }
       }
       const { data, error } = await supabase
         .from("companies")
