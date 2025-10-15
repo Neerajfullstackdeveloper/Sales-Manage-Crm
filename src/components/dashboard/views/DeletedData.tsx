@@ -1,56 +1,65 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import CompanyCard from "@/components/CompanyCard";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-interface DeletedDataViewProps {
-  userRole?: string;
-}
-
-const DeletedDataView = ({ userRole }: DeletedDataViewProps) => {
+const DeletedDataView = () => {
   const [deletedCompanies, setDeletedCompanies] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDeletedCompanies();
+    fetchEmployees();
   }, []);
 
+  // ✅ Fetch all deleted companies
   const fetchDeletedCompanies = async () => {
     setLoading(true);
-
     const { data, error } = await supabase
       .from("companies")
-      .select(`
-        *,
-        comments (
-          id,
-          comment_text,
-          category,
-          comment_date,
-          created_at,
-          user_id,
-          user:profiles!user_id (
-            display_name,
-            email
-          )
-        )
-      `)
-      .eq("is_deleted", true) // 👈 filter for deleted companies
+      .select("*")
+      .eq("is_deleted", true)
       .order("deleted_at", { ascending: false });
 
     if (!error && data) {
-      // Sort comments by latest date for consistency
-      const sorted = data.map(company => ({
-        ...company,
-        comments: company.comments?.sort(
-          (a: any, b: any) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        ) || []
-      }));
-      setDeletedCompanies(sorted);
+      setDeletedCompanies(data);
     }
-
     setLoading(false);
+  };
+
+  // ✅ Fetch all employees for reassignment dropdown
+  const fetchEmployees = async () => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, display_name, email, role");
+
+    if (!error && data) {
+      // Filter only employees
+      const employeeList = data.filter((u) => u.role === "employee");
+      setEmployees(employeeList);
+    }
+  };
+
+  // ✅ Reassign function
+  const handleReassign = async (companyId: string, newEmployeeId: string) => {
+    try {
+      const { error } = await supabase
+        .from("companies")
+        .update({
+          assigned_to_id: newEmployeeId,
+          is_deleted: false, // restore while reassigning
+          deleted_at: null,
+        })
+        .eq("id", companyId);
+
+      if (error) throw error;
+
+      toast.success("Company successfully reassigned!");
+      fetchDeletedCompanies();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to reassign company");
+    }
   };
 
   if (loading) {
@@ -63,19 +72,44 @@ const DeletedDataView = ({ userRole }: DeletedDataViewProps) => {
 
   return (
     <div>
-      <h2 className="text-3xl font-bold mb-6">Deleted Data</h2>
+      <h2 className="text-3xl font-bold mb-6">Deleted Companies (Reassign)</h2>
       {deletedCompanies.length === 0 ? (
         <p className="text-muted-foreground">No deleted companies found.</p>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="space-y-4">
           {deletedCompanies.map((company) => (
-            <CompanyCard
+            <div
               key={company.id}
-              company={company}
-              onUpdate={fetchDeletedCompanies}
-              userRole={userRole}
-              canDelete={false} // disable delete in deleted view
-            />
+              className="border p-4 rounded-lg shadow-sm bg-white"
+            >
+              <h3 className="font-semibold text-lg">{company.name}</h3>
+              <p className="text-sm text-gray-600">
+                Deleted At:{" "}
+                {company.deleted_at
+                  ? new Date(company.deleted_at).toLocaleString()
+                  : "N/A"}
+              </p>
+
+              {/* Reassign Dropdown */}
+              <div className="mt-3 flex items-center gap-2">
+                <select
+                  className="border rounded-md px-3 py-2 text-sm"
+                  defaultValue=""
+                  onChange={(e) =>
+                    handleReassign(company.id, e.target.value)
+                  }
+                >
+                  <option value="" disabled>
+                    Reassign to employee...
+                  </option>
+                  {employees.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.display_name} ({emp.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           ))}
         </div>
       )}
