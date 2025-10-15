@@ -279,132 +279,136 @@ const CompanyCard = ({
           </div>
         )}
 
-        <div className="flex gap-2">
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="flex-1">
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Add Comment
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Comment - {company.company_name}</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 mt-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Comment</label>
-                  <Textarea
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Enter your comment..."
-                    rows={4}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Date (optional)</label>
-                  <Input
-                    type="date"
-                    value={commentDate}
-                    onChange={(e) => setCommentDate(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Category</label>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="follow_up">Follow Up</SelectItem>
-                      <SelectItem value="hot">Hot</SelectItem>
-                      <SelectItem value="block">Block</SelectItem>
-                      <SelectItem value="general">General</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  onClick={handleAddComment}
-                  disabled={loading}
-                  className="w-full"
-                >
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="flex-1">
+                  <MessageSquare className="mr-2 h-4 w-4" />
                   Add Comment
                 </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          {company.comments && company.comments.length > 0 && (
-            <Dialog open={commentsOpen} onOpenChange={setCommentsOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <MessageSquare className="mr-1 h-3 w-3" />
-                  View All ({company.comments.length})
-                </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[80vh]">
+              <DialogContent>
                 <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5" />
-                    Comments for {company.company_name}
-                  </DialogTitle>
+                  <DialogTitle>Add Comment - {company.company_name}</DialogTitle>
                 </DialogHeader>
-                <ScrollArea className="h-[60vh] pr-4">
-                  <div className="space-y-4">
-                    {company.comments
-                      .sort(
-                        (a: any, b: any) =>
-                          new Date(b.created_at).getTime() -
-                          new Date(a.created_at).getTime()
-                      )
-                      .map((comment: any) => (
-                        <Card key={comment.id} className="p-4">
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                <span className="text-xs font-medium text-blue-600">
-                                  {comment.user?.display_name?.charAt(0) || "U"}
-                                </span>
-                              </div>
-                              <div>
-                                <p className="font-medium text-sm">
-                                  {comment.user?.display_name || "Unknown User"}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {comment.user?.email}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                className={`text-xs ${getCategoryColor(
-                                  comment.category
-                                )}`}
-                              >
-                                {getCategoryIcon(comment.category)}{" "}
-                                {comment.category.replace("_", " ")}
-                              </Badge>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Clock className="h-3 w-3" />
-                                {new Date(comment.created_at).toLocaleString()}
-                              </div>
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground leading-relaxed">
-                            {comment.comment_text}
-                          </p>
-                        </Card>
-                      ))}
+                <div className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Comment</label>
+                    <Textarea
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      placeholder="Enter your comment..."
+                      rows={4}
+                    />
                   </div>
-                </ScrollArea>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Date (optional)</label>
+                    <Input
+                      type="date"
+                      value={commentDate}
+                      onChange={(e) => setCommentDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Category</label>
+                    <Select value={category} onValueChange={setCategory}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="follow_up">Follow Up</SelectItem>
+                        <SelectItem value="hot">Hot</SelectItem>
+                        <SelectItem value="block">Block</SelectItem>
+                        <SelectItem value="general">General</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    onClick={handleAddComment}
+                    disabled={loading}
+                    className="w-full"
+                  >
+                    Add Comment
+                  </Button>
+                </div>
               </DialogContent>
             </Dialog>
-          )}
+
+            {company.comments && company.comments.length > 0 && (
+              <Dialog open={commentsOpen} onOpenChange={setCommentsOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <MessageSquare className="mr-1 h-3 w-3" />
+                    View All ({company.comments.length})
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[80vh]">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <MessageSquare className="h-5 w-5" />
+                      Comments for {company.company_name}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <ScrollArea className="h-[60vh] pr-4">
+                    <div className="space-y-4">
+                      {company.comments
+                        .sort(
+                          (a: any, b: any) =>
+                            new Date(b.created_at).getTime() -
+                            new Date(a.created_at).getTime()
+                        )
+                        .map((comment: any) => (
+                          <Card key={comment.id} className="p-4">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                  <span className="text-xs font-medium text-blue-600">
+                                    {comment.user?.display_name?.charAt(0) || "U"}
+                                  </span>
+                                </div>
+                                <div>
+                                  <p className="font-medium text-sm">
+                                    {comment.user?.display_name || "Unknown User"}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {comment.user?.email}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  className={`text-xs ${getCategoryColor(
+                                    comment.category
+                                  )}`}
+                                >
+                                  {getCategoryIcon(comment.category)}{" "}
+                                  {comment.category.replace("_", " ")}
+                                </Badge>
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Clock className="h-3 w-3" />
+                                  {new Date(comment.created_at).toLocaleString()}
+                                </div>
+                              </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              {comment.comment_text}
+                            </p>
+                          </Card>
+                        ))}
+                    </div>
+                  </ScrollArea>
+                </DialogContent>
+              </Dialog>
+            )}
+
+          </div>
 
           {canDelete && (
-            <div className="w-full flex justify-end mt-2">
-              <Button variant="destructive" size="icon" onClick={handleDelete}>
-                <Trash2 className="h-4 w-4" />
+            <div>
+              <Button variant="destructive" className="w-full" onClick={handleDelete}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Move to Deleted Data
               </Button>
             </div>
           )}
