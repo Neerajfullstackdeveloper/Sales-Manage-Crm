@@ -234,21 +234,13 @@ const handleDeleteCompany = async (company: any) => {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {companies.map((company: any) => (
-            <div key={company.id} className="relative">
-              <CompanyCard
-                company={company}
-                onUpdate={fetchBlockData}
-                canDelete={false} // All users can delete below button
-                userRole={userRole}
-              />
-              {/* Delete button below company card */}
-              <button
-                onClick={() => handleDeleteCompany(company)}
-                className="mt-2 w-full bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-              >
-                Move to Deleted Data
-              </button>
-            </div>
+            <CompanyCard
+              key={company.id}
+              company={company}
+              onUpdate={fetchBlockData}
+              canDelete={true}
+              userRole={userRole}
+            />
           ))}
         </div>
       )}
