@@ -78,7 +78,7 @@ const TeamLeadDashboard = ({ user }: TeamLeadDashboardProps) => {
       {currentView === "team" && <TeamManagementView userId={user.id} />}
       {currentView === "assign" && <DataAssignmentView userId={user.id} />}
       {currentView === "overview" && <EmployeeDataOverviewView userId={user.id} />}
-      {currentView === "delete" && <EmployeeDataOverviewView userId={user.id} />}
+      {currentView === "delete" && <DeletedDataView userId={user.id} />}
     </DashboardLayout>
   );
 };
